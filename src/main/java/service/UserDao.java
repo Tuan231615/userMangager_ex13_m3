@@ -160,6 +160,67 @@ public class UserDao implements IUserDao {
         }
     }
 
+    @Override
+    public void addUserTransaction(User user, int[] permisions) {
+        Connection connection = null;
+        PreparedStatement pstmt = null;
+        PreparedStatement pstmtAssignment = null;
+        ResultSet rs = null;
+        try {
+            connection = getConnection();
+            connection.setAutoCommit(false);
+            pstmt=connection.prepareStatement(INSERT_USERS_SQL, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getCountry());
+            int rowAffected = pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            int userId = 0;
+            if (rs.next()){
+                userId=rs.getInt(1);
+                if (rowAffected==1){
+                    String sqlPivot = "INSERT INTO user_permision(user_id,permision_id) "
+
+                            + "VALUES(?,?)";
+                    pstmtAssignment = connection.prepareStatement(sqlPivot);
+                    for (int permisionId: permisions) {
+                        pstmtAssignment.setInt(1, userId);
+                        pstmtAssignment.setInt(2, permisionId);
+                        pstmtAssignment.executeUpdate();
+                    }
+                connection.commit();
+                }
+                else {
+                    connection.rollback();
+                }
+            }
+        } catch (SQLException ex) {
+            try {
+                if (connection != null)
+                    connection.rollback();
+            }catch (SQLException e){
+                System.out.println(e.getMessage());
+            }
+            System.out.println(ex.getMessage());
+        }finally {
+            try {
+
+                if (rs != null) rs.close();
+
+                if (pstmt != null) pstmt.close();
+
+                if (pstmtAssignment != null) pstmtAssignment.close();
+
+                if (connection != null) connection.close();
+
+            } catch (SQLException e) {
+
+                System.out.println(e.getMessage());
+
+            }
+        }
+    }
+
     public List<User> selectAllUsers() {
         List<User> users = new ArrayList<>();
         // Step 1: Establishing a Connection

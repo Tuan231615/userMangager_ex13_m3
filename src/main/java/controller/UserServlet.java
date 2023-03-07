@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.BreakIterator;
 import java.util.List;
 
 @WebServlet(name = "UserServlet", value = "/users")
@@ -69,6 +70,9 @@ public class UserServlet extends HttpServlet {
                     case "sort":
                         sortByName(request, response);
                         break;
+                    case "permision":
+                        addUserPermision(request, response);
+                        break;
                         default:
                         listUser(request, response);
                         break;
@@ -76,6 +80,12 @@ public class UserServlet extends HttpServlet {
             } catch (SQLException ex) {
                 throw new ServletException(ex);
             }
+        }
+
+    private void addUserPermision(HttpServletRequest request, HttpServletResponse response) {
+    User user = new User("tuan", "tuan.nguyen@gmail.com", "nam dinh mai dinh");
+    int[] permision = {1, 2, 4};
+    userDAO.addUserTransaction(user, permision);
         }
 
     private void sortByName(HttpServletRequest request, HttpServletResponse response)
