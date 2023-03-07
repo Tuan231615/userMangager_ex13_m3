@@ -5,9 +5,9 @@
     <title>JSP - Hello World</title>
 </head>
 <body>
-<h1><%= "Chao xin cac con vo de thuong" %>
+<h1><%= "Chào xìn các con vợ dễ thương" %>
 </h1>
 <br/>
-<a href="/users">User</a>
+<a href="/users">Come here bây bi</a>
 </body>
 </html>
